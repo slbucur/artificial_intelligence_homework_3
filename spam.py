@@ -88,3 +88,4 @@ for mail in test_spam:
         knn_cnt_spam += 1
 print cnt_spam, len(test_spam)
 print knn_cnt_spam, len(test_spam)
+print "Change"
