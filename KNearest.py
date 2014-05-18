@@ -25,7 +25,8 @@ class WordBag:
         return False
 
 class KNearest:
-    def __init__(self, data_dic, k):
+    def __init__(self, data_dic, k, weighted=False):
+        self.weighted = weighted
         self.data = data_dic
         self.k = k
 
@@ -53,5 +54,8 @@ class KNearest:
         neighs = self.k_nearest_neighs(x)
         cls_count = {}
         for neigh in neighs:
-            cls_count[self.data[neigh]] = cls_count.get(self.data[neigh], 0) + 1
+            if self.weighted == True:
+                cls_count[self.data[neigh]] = cls_count.get(self.data[neigh], 0) + x.dist(neigh)
+            else:
+                cls_count[self.data[neigh]] = cls_count.get(self.data[neigh], 0) + 1
         return keywithmaxval(cls_count)

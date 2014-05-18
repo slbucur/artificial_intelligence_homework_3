@@ -70,21 +70,27 @@ k = int(sys.argv[2])
 nb_dic, knn_dic, test_ham, test_spam = make_nb_mails_dic(data_ham, data_spam, proc)
 
 shnb = nb.NaiveBayes(nb_dic)
-shknn = knn.KNearest(knn_dic,k)
+shknn = knn.KNearest(knn_dic,k, False)
+shwknn = knn.KNearest(knn_dic,k, True)
 cnt_ham = 0
 cnt_spam = 0
 knn_cnt_ham = 0
 knn_cnt_spam = 0
-
+wknn_ham = 0
+wknn_spam = 0
 cnt = 0
 print "ham"
 for mail in test_ham:
-    c = shnb.find_class(mail.split())
-    knn_c = shknn.k_nearest_class(knn.WordBag(mail.split()))
+    words = mail.split()
+    c = shnb.find_class(words)
+    knn_c = shknn.k_nearest_class(knn.WordBag(words))
+    wknn_c = shwknn.k_nearest_class(knn.WordBag(words))
     if c == "ham":
         cnt_ham+=1
     if knn_c == "ham":
         knn_cnt_ham += 1
+    if wknn_c == "ham":
+        wknn_ham += 1
     cnt+= 1
     stdout.write("\r%f complete" % (float(cnt) / float(len(test_ham)) * 100 ))
     stdout.flush()
@@ -92,15 +98,19 @@ for mail in test_ham:
 print ""
 print "Naive-Bayes: ", cnt_ham, " detected, ", len(test_ham), " total"
 print "KNN: ", knn_cnt_ham," detected, ",  len(test_ham), " total"
+print "WKNN: ", wknn_ham," detected, ",  len(test_ham), " total"
 
 cnt = 0
 for mail in test_spam:
-    c = shnb.find_class(mail.split())
-    knn_c = shknn.k_nearest_class(knn.WordBag(mail.split()))
+    words = mail.split()
+    c = shnb.find_class(words)
+    knn_c = shknn.k_nearest_class(knn.WordBag(words))
     if c == "spam":
         cnt_spam+=1
     if knn_c == "spam":
         knn_cnt_spam += 1
+    if knn_c == "spam":
+        wknn_spam += 1
     cnt+= 1
     stdout.write("\r%f complete" % (float(cnt) / float(len(test_spam)) * 100 ))
     stdout.flush()
@@ -108,3 +118,4 @@ for mail in test_spam:
 print ""
 print "Naive-Bayes: ", cnt_spam, " detected, ", len(test_spam), " total"
 print "KNN: ", knn_cnt_spam," detected, ",  len(test_spam), " total"
+print "WKNN: ", wknn_spam," detected, ",  len(test_spam), " total"

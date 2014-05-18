@@ -70,7 +70,7 @@ k = int(sys.argv[3])
 
 nb_dic, knn_dic, test_lines = read_input_data("input/train.tsv", proc, proc_tot)
 nb1 = nb.NaiveBayes(nb_dic)
-knn1 = knn.KNearest(knn_dic, k)
+knn1 = knn.KNearest(knn_dic, k, True)
 
 q = Queue()
 n = 8
