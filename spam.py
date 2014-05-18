@@ -57,7 +57,7 @@ def make_nb_mails_dic(data_ham, data_spam, proc):
 
     return nb_dic, knn_dic, test_ham, test_spam
 
-path = "input/mails/bla/"
+path = "input/mails/good_sample/"
 dirs_ham = ["easy_ham", "easy_ham_2", "hard_ham"]
 dirs_spam = ["spam", "spam_2"]
 
