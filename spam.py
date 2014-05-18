@@ -2,6 +2,8 @@ import NaiveBayes as nb
 import KNearest as knn
 import os,re
 import random
+import sys
+from sys import stdout
 
 def read_mails(path):
     #path = dir_path  # remove the trailing '\'
@@ -25,6 +27,8 @@ def retrieve_data(path, dirs):
     return data
 
 def make_nb_mails_dic(data_ham, data_spam, proc):
+    random.shuffle(data_ham)
+    random.shuffle(data_spam)
     idx_ham = len(data_ham) * float(proc) / 100
     idx_ham = int(idx_ham)
     test_ham = data_ham[idx_ham:-1]
@@ -60,15 +64,20 @@ dirs_spam = ["spam", "spam_2"]
 data_ham = retrieve_data(path, dirs_ham)
 data_spam = retrieve_data(path, dirs_spam)
 
-nb_dic, knn_dic, test_ham, test_spam = make_nb_mails_dic(data_ham, data_spam, 70)
-#print nb_dic.values()
+proc = float(sys.argv[1])
+k = int(sys.argv[2])
+
+nb_dic, knn_dic, test_ham, test_spam = make_nb_mails_dic(data_ham, data_spam, proc)
+
 shnb = nb.NaiveBayes(nb_dic)
-shknn = knn.KNearest(knn_dic,11)
+shknn = knn.KNearest(knn_dic,k)
 cnt_ham = 0
 cnt_spam = 0
 knn_cnt_ham = 0
 knn_cnt_spam = 0
-#print test_ham
+
+cnt = 0
+print "ham"
 for mail in test_ham:
     c = shnb.find_class(mail.split())
     knn_c = shknn.k_nearest_class(knn.WordBag(mail.split()))
@@ -76,9 +85,15 @@ for mail in test_ham:
         cnt_ham+=1
     if knn_c == "ham":
         knn_cnt_ham += 1
-print cnt_ham, len(test_ham)
-print knn_cnt_ham, len(test_ham)
+    cnt+= 1
+    stdout.write("\r%f complete" % (float(cnt) / float(len(test_ham)) * 100 ))
+    stdout.flush()
 
+print ""
+print "Naive-Bayes: ", cnt_ham, " detected, ", len(test_ham), " total"
+print "KNN: ", knn_cnt_ham," detected, ",  len(test_ham), " total"
+
+cnt = 0
 for mail in test_spam:
     c = shnb.find_class(mail.split())
     knn_c = shknn.k_nearest_class(knn.WordBag(mail.split()))
@@ -86,6 +101,10 @@ for mail in test_spam:
         cnt_spam+=1
     if knn_c == "spam":
         knn_cnt_spam += 1
-print cnt_spam, len(test_spam)
-print knn_cnt_spam, len(test_spam)
-print "Change"
+    cnt+= 1
+    stdout.write("\r%f complete" % (float(cnt) / float(len(test_spam)) * 100 ))
+    stdout.flush()
+
+print ""
+print "Naive-Bayes: ", cnt_spam, " detected, ", len(test_spam), " total"
+print "KNN: ", knn_cnt_spam," detected, ",  len(test_spam), " total"
